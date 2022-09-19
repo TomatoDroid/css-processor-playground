@@ -2,6 +2,8 @@
   import Code from './components/code.vue'
   import { ref, watch } from 'vue'
   import snippet from './snippet.mjs'
+  import { compileSassStr } from './sass.mjs';
+
   let type = 'variable'
   const language = ref('scss')
   const from = ref(snippet[type][language.value])
@@ -9,23 +11,30 @@
 
   watch(from, (value) => {
     if (language.value === 'scss') {
-      fetch('/api/compile', {
-        method: 'POST',
-        mode: 'cors',
-        headers: {
-          'Content-Type': 'application/json'
-          // 'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: JSON.stringify({
-          compiler: "dart-sass/1.32.12",
-          input: value,
-          outputStyle: 'expanded',
-          syntax: 'SCSS'
-        })
-      }).then(async (v) => { 
-        const res = await v.json()
-        to.value = res.css 
+      value = value.replaceAll(/\n/g, '')
+      compileSassStr(value).then((v) => {
+        to.value = v
+      }).catch((e) => {
+        console.error(e)
       })
+      // fetch('/api/compile', {
+      //   method: 'POST',
+      //   mode: 'cors',
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //     // 'Content-Type': 'application/x-www-form-urlencoded',
+      //   },
+      //   body: JSON.stringify({
+      //     compiler: "dart-sass/1.32.12",
+      //     input: value,
+      //     outputStyle: 'expanded',
+      //     syntax: 'SCSS'
+      //   })
+      // }).then(async (v) => { 
+      //   const res = await v.json()
+      //   to.value = res.css 
+      // })
+
     } else {
       console.log('less change')
       window.less.render(value)

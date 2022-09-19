@@ -9,6 +9,7 @@
   "dependencies": {
     "monaco-editor": "^0.34.0",
     "sass": "^1.54.8",
+    "sass.js": "^0.11.1",
     "vue": "^3.2.37"
   },
   "devDependencies": {
